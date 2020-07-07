@@ -76,6 +76,10 @@ module Fastlane
 
         use_app_entitlements = params[:entitlements].nil?
 
+        if !params[:provisioning_profile_mapping].nil?
+          provisioning_profile = params[:provisioning_profile_mapping]
+        end
+
         other_action.resign(
           ipa: File.expand_path(ipa_path),
           signing_identity: signing_identity,
@@ -202,7 +206,13 @@ module Fastlane
                                       description: "Path for the new contents", # a short description of this parameter
                                       verify_block: proc do |value|
                                         UI.user_error!("No path argument found for the new contents, pass using `contents: 'path-to-new-contents-folder'`") unless value && !value.empty?
-                                      end)
+                                      end),
+          FastlaneCore::ConfigItem.new(key: :provisioning_profile_mapping,
+                                       env_name: "FL_REPACK_IOS_PROVISIONING_PROFILE_MAPPING", # The name of the environment variable
+                                       description: "Mapping for provisioning profiles", # a short description of this parameter
+                                       is_string: false,
+                                       optional: true
+          )
         ]
       end
 
